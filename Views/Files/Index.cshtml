@@ -1,0 +1,112 @@
+@* ═══════════════════════════════════════════════════════════════════
+   ASSIGNED TO: BHAVYA  |  BRANCH: bhavya
+   
+   THIS VIEW IS A STUB — the HTML is done, just ensure the controller
+   passes the correct data.
+   
+   MODEL: IEnumerable<IGrouping<string, StudentCampusPortal.Models.SubjectFile>>
+   (files grouped by Subject)
+   ═══════════════════════════════════════════════════════════════════ *@
+
+@model IEnumerable<IGrouping<string, StudentCampusPortal.Models.SubjectFile>>
+@{
+    ViewData["Title"] = "Files";
+    ViewData["ActivePage"] = "Files";
+    Layout = "_Layout";
+    var subjects = new[] { ".NET", "DAA", "FM", "CCE", "QLA", "Other" };
+}
+
+<div class="page-title">Document Vault</div>
+<div class="page-sub">Upload and manage your study files</div>
+
+<!-- Upload form -->
+<div class="card-panel mb-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-cloud-upload-fill" style="color:var(--accent)"></i>
+        <strong>Upload New File</strong>
+    </div>
+    <form asp-action="Upload" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold" style="font-size:0.85rem;">Subject / Folder</label>
+                <select name="subject" class="form-select">
+                    @foreach (var s in subjects) { <option value="@s">@s</option> }
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label fw-semibold" style="font-size:0.85rem;">Choose File (max 10 MB)</label>
+                <input type="file" name="file" class="form-control" required />
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-upload me-1"></i> Upload
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- File list grouped by subject -->
+<div class="card-panel">
+    <div class="d-flex align-items-center gap-2 mb-1">
+        <i class="bi bi-folder2-open" style="color:var(--accent)"></i>
+        <strong>All Documents</strong>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-folder-x" style="font-size:2.5rem;"></i>
+            <p class="mt-2">No files uploaded yet. Upload your first file above!</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var group in Model)
+        {
+            <div class="folder-header">
+                <i class="bi bi-folder-fill" style="color:var(--warning)"></i>
+                @group.Key
+                <span class="badge bg-light text-muted" style="font-size:0.7rem;">@group.Count() file(s)</span>
+            </div>
+            @foreach (var file in group)
+            {
+                <div class="file-item">
+                    <div class="file-icon">
+                        @{
+                            var ext2 = System.IO.Path.GetExtension(file.FileName).ToLower();
+                            string icon;
+                            if (ext2 == ".pdf") icon = "bi-file-earmark-pdf-fill";
+                            else if (ext2 == ".doc" || ext2 == ".docx") icon = "bi-file-earmark-word-fill";
+                            else if (ext2 == ".ppt" || ext2 == ".pptx") icon = "bi-file-earmark-ppt-fill";
+                            else if (ext2 == ".xls" || ext2 == ".xlsx") icon = "bi-file-earmark-excel-fill";
+                            else if (ext2 == ".zip" || ext2 == ".rar")  icon = "bi-file-earmark-zip-fill";
+                            else icon = "bi-file-earmark-fill";
+                        }
+                        <i class="bi @icon"></i>
+                    </div>
+                    <div>
+                        <div class="file-name">@file.FileName</div>
+                        <div class="file-meta">
+                            @file.UploadedAt.ToString("dd MMM yyyy, hh:mm tt")
+                            &nbsp;·&nbsp; @(file.FileSizeBytes / 1024) KB
+                        </div>
+                    </div>
+                    <div class="ms-auto d-flex gap-2">
+                        <a asp-action="Download" asp-route-id="@file.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-download"></i> Download
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@file.Id" method="post"
+                              onsubmit="return confirm('Delete this file?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>

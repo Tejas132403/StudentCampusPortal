@@ -1,0 +1,68 @@
+@model StudentCampusPortal.Models.RegisterViewModel
+@{ ViewData["Title"] = "Register"; Layout = "_Layout"; }
+
+<div class="auth-card" style="max-width:480px;">
+    <div class="auth-logo">
+        <div class="brand-icon"><i class="bi bi-person-plus-fill"></i></div>
+        <h4>Create Account</h4>
+        <p>Register with your university details</p>
+    </div>
+
+    <form asp-action="Register" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger mb-3" style="font-size:0.85rem;"></div>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <label asp-for="Name" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+                <input asp-for="Name" class="form-control" placeholder="Your full name" />
+                <span asp-validation-for="Name" class="text-danger" style="font-size:0.8rem;"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="EnrollmentNo" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+                <input asp-for="EnrollmentNo" class="form-control" placeholder="e.g. 92400103122" />
+                <span asp-validation-for="EnrollmentNo" class="text-danger" style="font-size:0.8rem;"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Email" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+                <input asp-for="Email" class="form-control" placeholder="university@email.com" />
+                <span asp-validation-for="Email" class="text-danger" style="font-size:0.8rem;"></span>
+            </div>
+            <div class="col-6">
+                <label asp-for="Class" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+                <input asp-for="Class" class="form-control" placeholder="5EC2" />
+                <span asp-validation-for="Class" class="text-danger" style="font-size:0.8rem;"></span>
+            </div>
+            <div class="col-6">
+                <label asp-for="Batch" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+                <select asp-for="Batch" class="form-select">
+                    <option value="">Select...</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                </select>
+                <span asp-validation-for="Batch" class="text-danger" style="font-size:0.8rem;"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Password" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+                <input asp-for="Password" class="form-control" placeholder="Min 6 characters" />
+                <span asp-validation-for="Password" class="text-danger" style="font-size:0.8rem;"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="ConfirmPassword" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Repeat password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger" style="font-size:0.8rem;"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 fw-semibold mt-4">Create Account</button>
+    </form>
+
+    <p class="text-center mt-3" style="font-size:0.85rem; color:#888;">
+        Already registered?
+        <a asp-action="Login" class="fw-semibold" style="color:var(--accent);">Sign in here</a>
+    </p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

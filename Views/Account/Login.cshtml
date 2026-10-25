@@ -1,0 +1,48 @@
+@model StudentCampusPortal.Models.LoginViewModel
+@{ ViewData["Title"] = "Login"; Layout = "_Layout"; }
+
+<div class="auth-card">
+    <div class="auth-logo">
+        <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+        <h4>Student Campus Portal</h4>
+        <p>Sign in with your enrollment number</p>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-action="Login" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger mb-3" style="font-size:0.85rem;"></div>
+
+        <div class="mb-3">
+            <label asp-for="EnrollmentNo" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+            <input asp-for="EnrollmentNo" class="form-control" placeholder="e.g. 92400103122" />
+            <span asp-validation-for="EnrollmentNo" class="text-danger" style="font-size:0.8rem;"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label fw-semibold" style="font-size:0.85rem;"></label>
+            <input asp-for="Password" class="form-control" placeholder="Your password" />
+            <span asp-validation-for="Password" class="text-danger" style="font-size:0.8rem;"></span>
+        </div>
+
+        <div class="mb-4 form-check">
+            <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
+            <label asp-for="RememberMe" class="form-check-label" style="font-size:0.85rem;"></label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">Sign In</button>
+    </form>
+
+    <p class="text-center mt-3" style="font-size:0.85rem; color:#888;">
+        Don't have an account?
+        <a asp-action="Register" class="fw-semibold" style="color:var(--accent);">Register here</a>
+    </p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

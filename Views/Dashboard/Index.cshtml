@@ -1,0 +1,124 @@
+@* ═══════════════════════════════════════════════════════════════════
+   ASSIGNED TO: HET  |  BRANCH: het
+   
+   THIS VIEW IS A STUB — complete the TODO section below.
+   
+   WHAT THIS PAGE SHOWS:
+   - Overall attendance % at the top (big number)
+   - Subject cards below — each showing Theory % and Lab % as colored bars
+   
+   MODEL: IEnumerable<StudentCampusPortal.Models.AttendanceRecord>
+   Each record = one row (one subject + one type: Theory or Lab)
+   
+   HINT: Group records by Subject using .GroupBy(r => r.Subject)
+   Then for each group, find Theory row and Lab row separately.
+   ═══════════════════════════════════════════════════════════════════ *@
+
+@model IEnumerable<StudentCampusPortal.Models.AttendanceRecord>
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActivePage"] = "Dashboard";
+    Layout = "_Layout";
+
+    // TODO (HET): Compute overall attendance % from the model data
+    // overall = sum of all AttendedClasses / sum of all TotalClasses * 100
+    // Use 0 as default if Model is empty
+    double overall = 0;
+    if (Model != null && Model.Any())
+    {
+        int totalAttended = Model.Sum(r => r.AttendedClasses);
+        int totalClasses  = Model.Sum(r => r.TotalClasses);
+        overall = totalClasses > 0 ? Math.Round((double)totalAttended / totalClasses * 100, 1) : 0;
+    }
+
+    // Group records by subject for rendering
+    var grouped = Model?.GroupBy(r => r.Subject) ?? Enumerable.Empty<IGrouping<string, StudentCampusPortal.Models.AttendanceRecord>>();
+}
+
+<div class="page-title">Student Dashboard</div>
+<div class="page-sub">@Context.Session.GetString("StudentName") &nbsp;·&nbsp; @Context.Session.GetString("Class") &nbsp;·&nbsp; Batch @Context.Session.GetString("Batch")</div>
+
+<!-- Overall stat card -->
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="stat-label">Overall Attendance</div>
+        <div class="stat-value" style="color: @(overall >= 75 ? "var(--accent)" : "#e53935")">@overall%</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Total Subjects</div>
+        <div class="stat-value">@grouped.Count()</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Below 75%</div>
+        <div class="stat-value" style="color:#e53935">
+            @grouped.Count(g => {
+                var theory = g.FirstOrDefault(r => r.Type == "Theory");
+                var lab    = g.FirstOrDefault(r => r.Type == "Lab");
+                return (theory != null && theory.Percentage < 75) || (lab != null && lab.Percentage < 75);
+            })
+        </div>
+    </div>
+</div>
+
+<!-- Subject-wise attendance cards -->
+<div class="card-panel">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-bar-chart-fill" style="color:var(--accent)"></i>
+        <strong>Subject-Wise Attendance</strong>
+    </div>
+
+    @if (!grouped.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-inbox" style="font-size:2rem;"></i>
+            <p class="mt-2">No attendance data found.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var subjectGroup in grouped)
+        {
+            var theory = subjectGroup.FirstOrDefault(r => r.Type == "Theory");
+            var lab    = subjectGroup.FirstOrDefault(r => r.Type == "Lab");
+
+            <div class="subject-card">
+                <div class="subject-name">
+                    @subjectGroup.Key
+                    @if (theory?.Percentage == 100 || lab?.Percentage == 100)
+                    {
+                        <span class="badge-100">🏆 100%</span>
+                    }
+                    else if ((theory != null && theory.Percentage < 75) || (lab != null && lab.Percentage < 75))
+                    {
+                        <span class="badge-low">⚠ Low</span>
+                    }
+                </div>
+
+                @if (theory != null)
+                {
+                    <div class="bar-row">
+                        <div class="bar-label">Theory</div>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-theory" style="width:@(theory.Percentage)%"></div>
+                        </div>
+                        <div class="bar-pct" style="color:@(theory.Percentage < 75 ? "#e53935" : "var(--accent)")">
+                            @theory.Percentage%
+                        </div>
+                    </div>
+                }
+                @if (lab != null)
+                {
+                    <div class="bar-row">
+                        <div class="bar-label">Lab / Practical</div>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-lab" style="width:@(lab.Percentage)%"></div>
+                        </div>
+                        <div class="bar-pct" style="color:@(lab.Percentage < 75 ? "#e53935" : "var(--warning)")">
+                            @lab.Percentage%
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

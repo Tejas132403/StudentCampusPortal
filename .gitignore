@@ -1,0 +1,21 @@
+## .NET
+bin/
+obj/
+*.user
+.vs/
+*.suo
+*.db
+*.mdf
+*.ldf
+
+## Uploads (don't commit student files)
+wwwroot/uploads/**
+!wwwroot/uploads/.gitkeep
+
+## Environment
+appsettings.Development.json
+.env
+
+## OS
+.DS_Store
+Thumbs.db

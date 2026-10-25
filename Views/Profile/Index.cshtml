@@ -1,0 +1,38 @@
+@model StudentCampusPortal.Models.Student
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = "Profile";
+    Layout = "_Layout";
+}
+
+<div class="page-title">Profile</div>
+<div class="page-sub">Your student information</div>
+
+<div class="card-panel" style="max-width:480px;">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="profile-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <div>
+            <div style="font-size:1.2rem; font-weight:700;">@Model.Name</div>
+            <div style="font-size:0.8rem; color:#888;">@Model.Class &nbsp;|&nbsp; Batch @Model.Batch</div>
+        </div>
+    </div>
+
+    <div class="profile-row">
+        <div class="profile-label"><i class="bi bi-person me-1"></i> Full Name</div>
+        <div class="profile-value">@Model.Name</div>
+    </div>
+    <div class="profile-row">
+        <div class="profile-label"><i class="bi bi-card-text me-1"></i> Enrollment No</div>
+        <div class="profile-value">@Model.EnrollmentNo</div>
+    </div>
+    <div class="profile-row">
+        <div class="profile-label"><i class="bi bi-building me-1"></i> Class</div>
+        <div class="profile-value">@Model.Class</div>
+    </div>
+    <div class="profile-row">
+        <div class="profile-label"><i class="bi bi-people me-1"></i> Batch</div>
+        <div class="profile-value">Batch @Model.Batch</div>
+    </div>
+</div>

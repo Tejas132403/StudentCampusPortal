@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Student Campus Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+@if (Context.Session.GetString("EnrollmentNo") != null)
+{
+    <!-- Sidebar Layout (shown only when logged in) -->
+    <div class="app-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <div>
+                    <div class="brand-name">CampusPortal</div>
+                    <div class="brand-sub">University Portal</div>
+                </div>
+            </div>
+
+            <div class="sidebar-section-label">NAVIGATION</div>
+            <nav class="sidebar-nav">
+                <a asp-controller="Dashboard" asp-action="Index"
+                   class="nav-item @(ViewData["ActivePage"]?.ToString() == "Dashboard" ? "active" : "")">
+                    <i class="bi bi-grid-fill"></i> Dashboard
+                </a>
+                <a asp-controller="Files" asp-action="Index"
+                   class="nav-item @(ViewData["ActivePage"]?.ToString() == "Files" ? "active" : "")">
+                    <i class="bi bi-folder2-open"></i> Files
+                </a>
+                <a asp-controller="Profile" asp-action="Index"
+                   class="nav-item @(ViewData["ActivePage"]?.ToString() == "Profile" ? "active" : "")">
+                    <i class="bi bi-person-circle"></i> Profile
+                </a>
+                <a asp-controller="Settings" asp-action="Index"
+                   class="nav-item @(ViewData["ActivePage"]?.ToString() == "Settings" ? "active" : "")">
+                    <i class="bi bi-gear"></i> Settings
+                </a>
+            </nav>
+
+            <!-- Bottom user info -->
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div>
+                        <div class="user-name">@Context.Session.GetString("StudentName")</div>
+                        <div class="user-enroll">@Context.Session.GetString("EnrollmentNo")</div>
+                    </div>
+                </div>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-logout" title="Logout">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+}
+else
+{
+    <!-- Auth pages (Login/Register) — no sidebar -->
+    <div class="auth-wrapper">
+        @RenderBody()
+    </div>
+}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
